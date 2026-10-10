@@ -1,0 +1,3 @@
+This template builds its knowledge base in the kbinit pass rather than from the
+input text, so any text here will do. Run the analyzer and look in the output log
+for kb.kbb and kb.json.

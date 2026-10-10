@@ -1,0 +1,30 @@
+###############################################
+# FILE: kbinit
+# SUBJ: Create the knowledge base global concept and populate it
+# AUTH: David de Hilster
+# CREATED: 2026-07-01
+# MODIFIED:
+###############################################
+
+@CODE
+
+# Create (or fetch) a "kb" concept hanging off the knowledge base
+# root and hold onto it in a global variable so later passes can add
+# to it and save it.
+G("kb") = getconcept(findroot(),"kb");
+
+# --- Example: build the knowledge base --------------------------------
+# Replace the concepts below with your own, or grow the KB from matches
+# produced by your grammar passes (see the other templates for how rules
+# add concepts and attributes to a knowledge base).
+L("animals") = getconcept(G("kb"),"animals");
+
+L("dog") = getconcept(L("animals"),"dog");
+addstrval(L("dog"),"sound","bark");
+addnumval(L("dog"),"legs",4);
+
+L("cat") = getconcept(L("animals"),"cat");
+addstrval(L("cat"),"sound","meow");
+addnumval(L("cat"),"legs",4);
+
+@@CODE

@@ -1,0 +1,58 @@
+# Runs the analyzer over every file in input/ with the latest NLP engine
+# release, fails if the engine reports an error, and keeps each file's output
+# log as a downloadable artifact.
+name: Analyze
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the NLP engine
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eo pipefail
+          # The engine is the Linux binary plus the engine files (data/ etc.)
+          # that -WORK points at.
+          mkdir -p "$RUNNER_TEMP/engine" && cd "$RUNNER_TEMP/engine"
+          gh release download --repo VisualText/nlp-engine \
+            --pattern ubuntu-latest.zip --pattern nlpengine.zip
+          unzip -q nlpengine.zip
+          unzip -q -j ubuntu-latest.zip ubuntu-latest/nlpl.exe
+          mv nlpl.exe nlp && chmod +x nlp
+          ./nlp --version
+
+      - name: Run the analyzer
+        run: |
+          set -eo pipefail
+          ENGINE="$RUNNER_TEMP/engine"
+          status=0
+          for f in input/*.txt; do
+            echo "::group::$f"
+            "$ENGINE/nlp" -ANA "$PWD" -IN "$PWD/$f" -WORK "$ENGINE" > /dev/null
+            log="${f}_log/err.log"
+            # A clean run logs only its date line.
+            if [ -f "$log" ] && grep -v '\[Date:' "$log" | grep -q .; then
+              echo "::error file=$f::the engine reported errors"
+              cat "$log"
+              status=1
+            fi
+            ls "${f}_log"
+            echo "::endgroup::"
+          done
+          exit $status
+
+      - name: Keep the output logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: output-logs
+          path: input/*_log/
+          if-no-files-found: ignore

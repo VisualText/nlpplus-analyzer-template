@@ -1,0 +1,5 @@
+# Engine output: one log folder per input file, plus run scratch space.
+*_log/
+output/
+logs/
+tmp/

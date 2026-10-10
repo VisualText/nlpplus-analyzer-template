@@ -1,0 +1,18 @@
+###############################################
+# FILE: output
+# SUBJ: Save the knowledge base and export it as JSON
+# AUTH: David de Hilster
+# CREATED: 2026-07-01
+# MODIFIED:
+###############################################
+
+@CODE
+
+# Save a human-readable dump of the knowledge base. The third argument
+# is the display type (attribute detail level).
+SaveKB("kb.kbb",G("kb"),2);
+
+# Export the same knowledge base as JSON.
+JsonKB("kb.json",G("kb"));
+
+@@CODE
