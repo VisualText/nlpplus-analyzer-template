@@ -27,7 +27,8 @@ jobs:
           unzip -q nlpengine.zip
           unzip -q -j ubuntu-latest.zip ubuntu-latest/nlpl.exe
           mv nlpl.exe nlp && chmod +x nlp
-          ./nlp --version
+          # --version prints the version but exits non-zero, as in the engine's own CI.
+          ./nlp --version || true
 
       - name: Run the analyzer
         run: |
